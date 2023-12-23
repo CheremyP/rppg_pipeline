@@ -1,3 +1,6 @@
+import numpy as np
+import math
+
 def POS_WANG(RGB):
     fs = 30
     WinSec = 1.6
