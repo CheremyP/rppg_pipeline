@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "rppg"
 version = "0.1.0"
-description = ""
-authors = ["Cheremy Pongajow <c.j.w.a.pongajowastien@student.tudelft.nl>"]
+description = "Vital parameter (e.g. heartrate) Estimation from video"
+authors = ["Cheremy Pongajow <c.j.w.a.pongajow@student.tudelft.nl>"]
 readme = "README.md"
 packages = []
 
