@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "rppg"
+version = "0.1.0"
+description = ""
+authors = ["Cheremy Pongajow <c.j.w.a.pongajowastien@student.tudelft.nl>"]
+readme = "README.md"
+packages = []
+
+[tool.poetry.dependencies]
+python = "^3.9"
+numpy = "^1.26.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
