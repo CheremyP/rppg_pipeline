@@ -1,10 +1,15 @@
-def get_bpm(rgb, fps= 30.0):
-  sig = rgb.copy()
-  rgb_length = len(rgb)
-  win = signal.hann(rgb.size)
-  rgb = rgb - np.expand_dims(np.mean(rgb, -1 ), -1 )
-  rgb = rgb * win
-  f, Pxx_den = signal.welch(rgb, fps, nperseg=rgb_length)
+import numpy as np
+from scipy import signal
+
+#TODO: Add heartpy estimation aswell
+
+def get_bpm(ppg_signal, fps= 30.0):
+  sig = ppg_signal.copy()
+  ppg_length = len(ppg_signal)
+  win = signal.hann(ppg_signal.size)
+  ppg_signal = ppg_signal - np.expand_dims(np.mean(ppg_signal, -1 ), -1 )
+  ppg_signal = ppg_signal * win
+  f, Pxx_den = signal.welch(ppg_signal, fps, nperseg=ppg_length)
   index = np.argmax(Pxx_den)
   HR_estimate =  round(f[index] * 60)
   return HR_estimate
