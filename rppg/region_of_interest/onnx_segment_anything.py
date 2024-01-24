@@ -9,17 +9,16 @@ from segment_anything import SamAutomaticMaskGenerator, sam_model_registry, SamP
 from segment_anything.utils.onnx import SamOnnxModel
 
 class SegmentAnything():
-    def __init__(self):        
-        sam_checkpoint = "sam_vit_h_4b8939.pth"
-        model_type = "vit_h"
-        device = "cuda"
+    def __init__(self, model_path, model_type, device):      
+        sam_checkpoint = model_path
 
         sam = sam_model_registry[model_type](checkpoint=sam_checkpoint)
+        sam.to(device)
         self.predictor = SamPredictor(sam)
 
-        onnx_model_path = "sam_onnx_example.onnx"
+        onnx_model_path = "model_checkpoints/sam_onnx_example.onnx"
         onnx_model = SamOnnxModel(sam, return_single_mask=True)
-        self.ort_session = onnxruntime.InferenceSession(onnx_model_path, providers=["CUDAExecutionProvider"])
+        self.ort_session = onnxruntime.InferenceSession(onnx_model_path, providers=["CUDAExecutionProvider", "CPUExecutionProvider"])
 
     def segment_anything_onnx(self, image, input_point, input_label):
         image_embedding = self.predictor.get_image_embedding().cpu().numpy()

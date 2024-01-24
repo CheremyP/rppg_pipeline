@@ -9,7 +9,22 @@ packages = []
 [tool.poetry.dependencies]
 python = "^3.9"
 numpy = "^1.26.2"
+onnxruntime = "^1.16.3"
+tqdm = "^4.66.1"
+opencv-python = "^4.8.1.78"
+onnxruntime-gpu = "^1.16.3"
+onnx = "^1.15.0"
+segment-anything = {git = "https://github.com/facebookresearch/segment-anything.git"}
+opencv-contrib-python = "^4.9.0.80"
+matplotlib = "^3.8.2"
+torch = "^2.1.2"
+torchvision = "^0.16.2"
+scipy = "^1.11.4"
+heartpy = "^1.2.7"
 
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.29.0"
 
 [build-system]
 requires = ["poetry-core"]

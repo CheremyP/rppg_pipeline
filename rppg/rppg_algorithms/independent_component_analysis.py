@@ -1,21 +1,17 @@
 import numpy as np
 import math 
 from scipy import linalg
-from signal_processing import detrend
+from signal_processing import post_processing 
 
-def ICA_POH(RGB):
+def independent_component_analysis(RGB):
     # Cut off frequency.
     LPF = 0.7
     HPF = 2.5
     FS= 30
 
     NyquistF = 1 / 2 * FS
-    BGRNorm = np.zeros(RGB.shape)
-    Lambda = 100
-    for c in range(3):
-        BGRDetrend = detrend(RGB[:, c], Lambda)
-        BGRNorm[:, c] = (BGRDetrend - np.mean(BGRDetrend)) / np.std(BGRDetrend)
-    _, S = ica(np.mat(BGRNorm).H, 3)
+
+    _, S = ica(np.mat(RGB).H, 3)
 
     # select BVP Source
     MaxPx = np.zeros((1, 3))
@@ -33,7 +29,7 @@ def ICA_POH(RGB):
     MaxComp = np.argmax(MaxPx)
     BVP_I = S[MaxComp, :]
 
-    return BVP_I
+    return np.array(BVP_I)
 
 def jade(X, m, Wprev):
     n = X.shape[0]

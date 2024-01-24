@@ -40,7 +40,7 @@ def show_anns(anns):
 def crop_faces(frame):
     # Convert the frame to grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-    face_cascade = cv2.CascadeClassifier('/content/drive/MyDrive/haarcascade_frontalface_default.xml')
+    face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
     # Detect faces in the grayscale image
     faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)

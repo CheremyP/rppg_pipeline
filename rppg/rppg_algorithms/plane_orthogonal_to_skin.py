@@ -1,7 +1,7 @@
 import numpy as np
 import math
 
-def plane_orthoganalto_skin(rgb_signal: np.array()) -> np.array():
+def plane_orthoganal_to_skin(rgb_signal):
     """ Calculate the blood volume pulse (BVP) signal from a RGB signal using the plane orthogonal to skin method.
 
     Parameters:

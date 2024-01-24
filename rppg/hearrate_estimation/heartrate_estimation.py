@@ -1,8 +1,9 @@
+import warnings
 from scipy import signal
 import numpy as np
 import heartpy as hp
 
-def get_bpm(ppg_signal: np.array(), sampling_rate=30.0) -> float:
+def get_bpm(ppg_signal, sampling_rate=30.0) -> float:
   """
   Estimate the heart rate from a PPG signal using Welch's method.
   
@@ -22,7 +23,12 @@ def get_bpm(ppg_signal: np.array(), sampling_rate=30.0) -> float:
   heart_rate_estimate = round(frequencies[max_power_index] * 60)
   return heart_rate_estimate
 
-def calculate_fft_hr(ppg_signal: np.array(), sampling_rate=30, low_pass=0.75, high_pass=2.5) -> float:
+
+def next_power_of_2(x):
+    """Calculate the nearest power of 2."""
+    return 1 if x == 0 else 2 ** (x - 1).bit_length()
+
+def calculate_fft_hr(ppg_signal, sampling_rate=30, low_pass=0.75, high_pass=2.5):
   """
   Calculate heart rate from a PPG signal using Fast Fourier Transform (FFT).
   
@@ -35,13 +41,22 @@ def calculate_fft_hr(ppg_signal: np.array(), sampling_rate=30, low_pass=0.75, hi
   Returns:
     float: The estimated heart rate in beats per minute.
   """
-  fft_length = np.fft.next_fast_len(ppg_signal.shape[1])
-  frequencies, power_spectral_density = signal.periodogram(ppg_signal, fs=sampling_rate, nfft=fft_length, detrend=False)
-  frequency_mask = (frequencies >= low_pass) & (frequencies <= high_pass)
-  masked_frequencies = frequencies[frequency_mask]
-  masked_power_spectral_density = power_spectral_density[frequency_mask]
-  fft_heart_rate = masked_frequencies[np.argmax(masked_power_spectral_density)] * 60
-  return fft_heart_rate
+
+  # Ignore UserWarning
+  warnings.filterwarnings("ignore", category=UserWarning)
+
+  N = next_power_of_2(ppg_signal.shape[0])
+
+  f_ppg, pxx_ppg = signal.periodogram(ppg_signal, fs=sampling_rate, nfft=N, detrend=False)
+  fmask_ppg = np.argwhere((f_ppg >= low_pass) & (f_ppg <= high_pass))
+  mask_ppg = np.take(f_ppg, fmask_ppg)
+  mask_pxx = np.take(pxx_ppg, fmask_ppg)
+
+  fft_hr = np.take(mask_ppg, np.argmax(mask_pxx, 0))[0] * 60
+  # Reset warnings to default behavior if needed
+  warnings.resetwarnings()
+
+  return fft_hr
 
 def calculate_peak_hr(ppg_signal, sampling_rate=30) -> float:
   """
@@ -54,11 +69,20 @@ def calculate_peak_hr(ppg_signal, sampling_rate=30) -> float:
   Returns:
     float: The estimated heart rate in beats per minute.
   """
+
+
+  # Ignore ComplexWarning
+  warnings.filterwarnings("ignore")
+
   peaks, _ = signal.find_peaks(ppg_signal, height=0.2, distance=15)
   heart_rate_peak = 60 / (np.mean(np.diff(peaks)) / sampling_rate)
+
+  # Reset warnings to default behavior if needed
+  warnings.resetwarnings()
+
   return heart_rate_peak
 
-def Calculate_heartpy_hr(ppg_signal, sampling_rate=30) -> float:
+def calculate_heartpy_hr(ppg_signal, sampling_rate=30) -> float:
   """
   Calculate heart rate from a PPG signal using heartpy.
   
@@ -72,3 +96,21 @@ def Calculate_heartpy_hr(ppg_signal, sampling_rate=30) -> float:
   _, measures = hp.process(ppg_signal, sampling_rate)
   heartpy_hr = measures['bpm']
   return heartpy_hr
+
+def calculate_hr(ppg_signal, sampling_rate=30) -> float:
+  """ c  def calculate_hr_autocorrelation(ppg_signal, sampling_rate=30) -> float:
+    Calculate heart rate from a PPG signal using autocorrelation.
+    
+    Parameters:
+      ppg_signal (np.array): The PPG signal of shape (1, frames).
+      sampling_rate (float): The sampling rate of the PPG signal.
+
+    Returns:
+      float: The estimated heart rate in beats per minute.
+    """
+  
+  autocorr = np.correlate(ppg_signal, ppg_signal, mode='full')
+  autocorr = autocorr[len(autocorr)//2:]
+  peaks, _ = signal.find_peaks(autocorr)
+  heart_rate_autocorr = 60 / (np.mean(np.diff(peaks)) / sampling_rate)
+  return heart_rate_autocorr
