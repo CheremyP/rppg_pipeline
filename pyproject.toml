@@ -13,7 +13,7 @@ onnxruntime = "^1.16.3"
 tqdm = "^4.66.1"
 opencv-python = "^4.8.1.78"
 onnxruntime-gpu = "^1.16.3"
-onnx = "^1.15.0"
+onnx = "^1.16.0"
 segment-anything = {git = "https://github.com/facebookresearch/segment-anything.git"}
 opencv-contrib-python = "^4.9.0.80"
 matplotlib = "^3.8.2"
